@@ -27,8 +27,13 @@ const printQueue = (queue: Array<string>): boolean => {
     return true;
 };
 
-const removeUserFromQueue = (queue: Array<string>, userId: string): Array<string> => {
+const removeUserByIdFromQueue = (queue: Array<string>, userId: string): Array<string> => {
     const userPosition = queue.findIndex((id) => (id === userId));
+    if( userPosition > -1) queue.splice(userPosition, 1);
+    return queue;
+};
+
+const removeUserByPositionFromQueue = (queue: Array<string>, userPosition: number): Array<string> => {
     if( userPosition > -1) queue.splice(userPosition, 1);
     return queue;
 }
@@ -39,8 +44,10 @@ export const index: APIGatewayProxyHandler = async (event) => {
         'ADD,1','ADD,2','ADD,3','ADD,4','ADD,5','ADD,6','ADD,6',
         'PRINT',
         'REVERSE',
+        'PRINT',
         'REMOVE_USER,2',
         'REMOVE_USER,9',
+        'REMOVE_POSITION,0',
         'PRINT',
     ];
     queueCommands.forEach((inputCommand) => {
@@ -54,7 +61,9 @@ export const index: APIGatewayProxyHandler = async (event) => {
             usersQueue.reverse();
             Log.debug('Reversed queue');
         } else if (operation === 'REMOVE_USER') {
-            usersQueue = removeUserFromQueue(usersQueue, arg1);
+            usersQueue = removeUserByIdFromQueue(usersQueue, arg1);
+        } else if (operation === 'REMOVE_POSITION') {
+            usersQueue = removeUserByPositionFromQueue(usersQueue, +arg1);
         }
     });
     // adding user
