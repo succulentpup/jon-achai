@@ -34,9 +34,22 @@ const removeUserByIdFromQueue = (queue: Array<string>, userId: string): Array<st
 };
 
 const removeUserByPositionFromQueue = (queue: Array<string>, userPosition: number): Array<string> => {
-    if( userPosition > -1) queue.splice(userPosition, 1);
+    if( userPosition > -1 && userPosition < queue.length) queue.splice(userPosition, 1);
     return queue;
-}
+};
+
+// const swapUsersByPosition = (queue: Array<string>, position1: number, position2: number): Array<string> => {
+//     const queueLength = queue.length;
+//     Log.debug('queueLength', { queueLength });
+//     if ((position1 > -1 && position1 < queueLength) && (position2 > -1 && position2 < queueLength)) {
+//         const temp = queue[position1];
+//         // tslint:disable-next-line
+//         queue[position1] = queue[position2];
+//         // tslint:disable-next-line
+//         queue[position2] = temp;
+//     }
+//     return queue;
+// };
 
 export const index: APIGatewayProxyHandler = async (event) => {
     let usersQueue: string[] = [];
@@ -48,6 +61,8 @@ export const index: APIGatewayProxyHandler = async (event) => {
         'REMOVE_USER,2',
         'REMOVE_USER,9',
         'REMOVE_POSITION,0',
+        'PRINT',
+        'SWAP,0,1',
         'PRINT',
     ];
     queueCommands.forEach((inputCommand) => {
@@ -64,7 +79,9 @@ export const index: APIGatewayProxyHandler = async (event) => {
             usersQueue = removeUserByIdFromQueue(usersQueue, arg1);
         } else if (operation === 'REMOVE_POSITION') {
             usersQueue = removeUserByPositionFromQueue(usersQueue, +arg1);
-        }
+        } /*else if (operation === 'SWAP') {
+            usersQueue = swapUsersByPosition(usersQueue, +arg1, +arg2);
+        }*/
     });
     // adding user
 
