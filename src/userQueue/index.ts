@@ -9,6 +9,8 @@ import httpSecurityHeaders from '@middy/http-security-headers';
 import status from 'statuses';
 import { incomingEventLogger, onErrorHandler } from '../helpers/middleware';
 
+import testCommands from  './actions';
+
 const WHITE_SPACES = 2;
 
 const addToQueue = (queue: Array<string>,userId: string): number  => {
@@ -65,37 +67,26 @@ const swapUsersByPosition = (queue: Array<string>, position1: number, position2:
 
 export const index: APIGatewayProxyHandler = async (event) => {
     let usersQueue: string[] = [];
-    const queueCommands = [
-        'ADD,1','ADD,2','ADD,3','ADD,4','ADD,5','ADD,6',
-        'REMOVE_USER,2',
-        'REMOVE_USER,6',
-        'REMOVE_USER,10',
-        'MOVE,3,1',
-        'REVERSE',
-        'SWAP,6,1',
-        'REMOVE_POSITION,3',
-        'REMOVE_USER,1',
-        'REMOVE_POSITION,6',
-        'ADD,7','ADD,8',
-        'PRINT',
-    ];
+    const queueCommands = testCommands();
     queueCommands.forEach((inputCommand) => {
-        const [operation, arg1, arg2] = inputCommand.split(',');
-        if (operation === 'ADD') {
-            addToQueue(usersQueue, arg1)
+        const [rawOperation, rawArg1, rawArg2] = inputCommand.split(',');
+        const operation = rawOperation.trim();
+        const arg1 = rawArg1 ? rawArg1.trim() : undefined;
+        const arg2 = rawArg2 ? rawArg2.trim() : undefined;
+        if (operation === 'ADD') { // no validations added to check mandatory args are present or not
+            addToQueue(usersQueue, arg1 as string)
         } else if (operation === 'PRINT') {
             printQueue(usersQueue);
         } else if (operation === 'REVERSE') {
             usersQueue.reverse();
-            Log.debug('Reversed queue');
         } else if (operation === 'REMOVE_USER') {
-            usersQueue = removeUserByIdFromQueue(usersQueue, arg1);
+            usersQueue = removeUserByIdFromQueue(usersQueue, arg1 as string);
         } else if (operation === 'REMOVE_POSITION') {
-            usersQueue = removeUserByPositionFromQueue(usersQueue, +arg1);
+            usersQueue = removeUserByPositionFromQueue(usersQueue, +(arg1 as string));
         } else if (operation === 'SWAP') {
-            usersQueue = swapUsersByPosition(usersQueue, +arg1, +arg2);
+            usersQueue = swapUsersByPosition(usersQueue, +(arg1 as string), +(arg2 as string));
         } else if (operation === 'MOVE') {
-            usersQueue = moveUserInQueue(usersQueue, +arg1, +arg2);
+            usersQueue = moveUserInQueue(usersQueue, +(arg1 as string), +(arg2 as string));
         }
     });
     // adding user
