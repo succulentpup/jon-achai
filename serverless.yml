@@ -65,6 +65,15 @@ functions: # add your functions
           method: get
           cors: true
           path: health
+  userQueue:
+    handler: src/userQueue/index.handler
+    name: ${self:custom.base}-userQueue
+    description: userQueue system for this service
+    events:
+      - http:
+          method: get
+          cors: true
+          path: queue
 resources:
   # include DynamoDB Tables if any
   # Output
