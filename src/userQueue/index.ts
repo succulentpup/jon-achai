@@ -21,6 +21,7 @@ const addToQueue = (queue: Array<string>,userId: string): number  => {
 };
 
 const printQueue = (queue: Array<string>): boolean => {
+    Log.info('Printing queue');
     queue.forEach((user, index) => {
         Log.info(`${index}: ${user}`)
     })
@@ -65,24 +66,23 @@ const swapUsersByPosition = (queue: Array<string>, position1: number, position2:
 export const index: APIGatewayProxyHandler = async (event) => {
     let usersQueue: string[] = [];
     const queueCommands = [
-        'ADD,1','ADD,2','ADD,3','ADD,4','ADD,5','ADD,6','ADD,6',
-        'PRINT',
-        'REVERSE',
-        'PRINT',
+        'ADD,1','ADD,2','ADD,3','ADD,4','ADD,5','ADD,6',
         'REMOVE_USER,2',
-        'REMOVE_USER,9',
-        'REMOVE_POSITION,0',
-        'PRINT',
-        'SWAP,0,1',
-        'PRINT',
+        'REMOVE_USER,6',
+        'REMOVE_USER,10',
         'MOVE,3,1',
+        'REVERSE',
+        'SWAP,6,1',
+        'REMOVE_POSITION,3',
+        'REMOVE_USER,1',
+        'REMOVE_POSITION,6',
+        'ADD,7','ADD,8',
         'PRINT',
     ];
     queueCommands.forEach((inputCommand) => {
         const [operation, arg1, arg2] = inputCommand.split(',');
         if (operation === 'ADD') {
-            const userPosition = addToQueue(usersQueue, arg1)
-            Log.info('userPosition', { userPosition });
+            addToQueue(usersQueue, arg1)
         } else if (operation === 'PRINT') {
             printQueue(usersQueue);
         } else if (operation === 'REVERSE') {
